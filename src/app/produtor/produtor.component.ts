@@ -25,12 +25,11 @@ export class ProdutorComponent {
     return result;
   }
 
-
-
   sendText() {
     if (!this.message) {
       alert('Digite um texto antes de enviar.');
       return;
+      
     }
 
     this.rabbitMQClientService.sendMessage(this.message);

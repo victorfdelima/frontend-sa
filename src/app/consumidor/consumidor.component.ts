@@ -1,4 +1,4 @@
-// ConsumidorComponent
+// consumidor.component.ts
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RabbitMQClientService } from '../rabbitmq-client.service';
@@ -23,23 +23,26 @@ export class ConsumidorComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const savedMessages = this.rabbitMQClientService.getSavedMessages();
 
-    savedMessages.forEach((message: string) => {
-      this.messages.push({ content: message, isValid: this.rabbitMQClientService.isValidMessage(message) });
+    savedMessages.forEach((message: MessageInfo) => {
+      this.messages.push({ ...message });
     });
 
-    this.messageSubscription = this.rabbitMQClientService.receiveMessage().subscribe((message: string) => {
-      const existingMessage = this.messages.find((msg) => msg.content === message);
+    this.messageSubscription = this.rabbitMQClientService.receiveMessage().subscribe((message: MessageInfo) => {
+      const existingMessage = this.messages.find((msg) => msg.content === message.content);
       if (!existingMessage) {
-        const isValid = this.rabbitMQClientService.isValidMessage(message);
-        this.messages.push({ content: message, isValid: isValid });
+        this.messages.push({ ...message });
         this.rabbitMQClientService.saveMessage(message);
       }
     });
   }
-
   ngOnDestroy(): void {
     if (this.messageSubscription) {
       this.messageSubscription.unsubscribe();
     }
+  }
+
+  clearMessages(): void {
+    this.messages = [];
+    localStorage.removeItem('messages');
   }
 }
