@@ -1,0 +1,12 @@
+<div>
+    <h2>Produtor</h2>
+    <div>
+      <input type="text" [(ngModel)]="message" />
+      <button (click)="generateRandomText()">Gerar Texto Aleatório</button>
+      <button (click)="sendText()">Enviar</button>
+    </div>
+    <div *ngIf="message">
+      <p>Você gerou a mensagem randomica, tem certeza que deseja enviar ela?: {{ message }}</p>
+    </div>
+  </div>
+  

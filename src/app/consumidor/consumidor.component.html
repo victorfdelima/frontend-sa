@@ -1,0 +1,18 @@
+<div>
+  <h2>Consumidor</h2>
+  <table>
+    <tr>
+      <th>Mensagem</th>
+      <th>Validação</th>
+    </tr>
+    <tr *ngFor="let message of messages">
+      <td>{{ message.content }}</td>
+      <td>
+        <span *ngIf="message.isValid; else invalid" class="valid-icon">&#10004; Válida</span>
+        <ng-template #invalid>
+          <span class="invalid-icon">&#10008; Inválida</span>
+        </ng-template>
+      </td>
+    </tr>
+  </table>
+</div>

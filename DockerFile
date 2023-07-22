@@ -1,0 +1,26 @@
+# Estágio de build
+FROM node:14 as build
+
+WORKDIR /app
+
+# Instala as dependências do frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm install
+
+# Copia os arquivos do frontend
+COPY frontend .
+
+# Constrói o frontend
+RUN npm run build
+
+# Estágio de produção
+FROM nginx:alpine
+
+# Copia os arquivos de build do frontend para o diretório do servidor nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Expõe a porta 80 para acesso externo
+EXPOSE 4200
+
+# Inicia o servidor nginx
+CMD ["nginx", "-g", "daemon off;"]
