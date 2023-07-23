@@ -54,7 +54,7 @@ export class RabbitMQClientService {
 
   sendMessage(message: string) {
     this.connectionPromise.then(() => {
-      this.hubConnection.invoke('SendText', message).catch(err => console.error(err));
+      this.hubConnection.invoke('SendText', message).catch((err: any) => console.error(err));
     }).catch(err => console.error(err));
   }
 

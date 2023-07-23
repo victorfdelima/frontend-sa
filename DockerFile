@@ -1,26 +1,13 @@
-# Estágio de build
-FROM node:14 as build
-
+# Stage 1: Build the Angular app
+FROM node:18 AS build
 WORKDIR /app
-
-# Instala as dependências do frontend
-COPY frontend/package.json frontend/package-lock.json ./
+COPY . .
 RUN npm install
+RUN npm run build --prod
 
-# Copia os arquivos do frontend
-COPY frontend .
-
-# Constrói o frontend
-RUN npm run build
-
-# Estágio de produção
 FROM nginx:alpine
-
-# Copia os arquivos de build do frontend para o diretório do servidor nginx
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Expõe a porta 80 para acesso externo
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /usr/share/nginx/html
+COPY --from=build /app/dist/frontend-sa .
 EXPOSE 4200
-
-# Inicia o servidor nginx
 CMD ["nginx", "-g", "daemon off;"]
