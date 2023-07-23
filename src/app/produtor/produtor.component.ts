@@ -25,6 +25,10 @@ export class ProdutorComponent {
     return result;
   }
 
+  emptyMessage(){
+    this.message = ""
+  }
+
   sendText() {
     if (!this.message) {
       alert('Digite um texto antes de enviar.');

@@ -1,6 +1,5 @@
 <div>
-  <h2>Consumidor</h2>
-  <button (click)="clearMessages()">Limpar Mensagens</button>
+  <button class="emptymessage" (click)="clearMessages()">Marcar todas como lidas</button>
   <table>
     <tr>
       <th>Mensagem</th>
@@ -12,6 +11,9 @@
         <span *ngIf="message.isValid; else invalid" class="valid-icon">&#10004; Válida</span>
         <ng-template #invalid>
           <span class="invalid-icon">&#10008; Inválida</span>
+          <audio #apitoAudio>
+            <source src="../../assets/notifyaudio.mp3" type="audio/mp3">
+          </audio>
         </ng-template>
       </td>
     </tr>

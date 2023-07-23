@@ -1,12 +1,14 @@
+<body class="body">
 <div>
-    <h2>Produtor</h2>
+    <h4>Digite sua mensagem ou gere uma aleatória</h4>
     <div>
-      <input type="text" [(ngModel)]="message" />
+      <input class="estilizado-input" placeholder="Digite sua notificação" type="text" [(ngModel)]="message" />
       <button (click)="generateRandomText()">Gerar Texto Aleatório</button>
       <button (click)="sendText()">Enviar</button>
+      <button (click)="emptyMessage()">Apagar Mensagem</button>
     </div>
     <div *ngIf="message">
-      <p>Você gerou a mensagem randomica, tem certeza que deseja enviar ela?: {{ message }}</p>
+      <p>Tem certeza que deseja enviar ela? {{ message }}</p>
     </div>
   </div>
-  
+</body>

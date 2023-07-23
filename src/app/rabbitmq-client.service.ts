@@ -1,6 +1,6 @@
 // rabbitmq-client.service.ts
 
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable, ViewChild } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Observable, Subject, filter, map } from 'rxjs';
 
@@ -10,16 +10,16 @@ import { Observable, Subject, filter, map } from 'rxjs';
 export class RabbitMQClientService {
   private hubConnection: signalR.HubConnection;
   private connectionPromise: Promise<void>;
+  private apitoAudio: HTMLAudioElement | undefined  
   private messageSubject: Subject<string> = new Subject<string>();
-  // private parseMessage(message: any): { content: string; isValid: boolean } {
-  //   return { content: message.content, isValid: message.isValid };
-  // }
   private parseMessage(message: any): { content: string; isValid: boolean } {
     return { content: message.content, isValid: message.isValid };
   }
+
   constructor() {
+    
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:44363/hubs/contador')
+      .withUrl('http://localhost:47662/hubs/contador')
       .build();
 
     this.connectionPromise = this.hubConnection.start();
@@ -28,6 +28,13 @@ export class RabbitMQClientService {
     this.hubConnection.on('ReceiveMessage', (message: string) => {
       this.messageSubject.next(message);
     });
+    this.apitoAudio = new Audio('assets/notifyaudio.mp3');
+  }
+  private playApitoSound() {
+    if (this.apitoAudio) {
+      this.apitoAudio.currentTime = 0;
+      this.apitoAudio.play().catch(err => console.error('Erro ao reproduzir áudio:', err));
+    }
   }
   isValidMessage(content: string): Observable<boolean> {
     return new Observable<boolean>((observer) => {
@@ -61,7 +68,10 @@ export class RabbitMQClientService {
   receiveMessage(): Observable<{ content: string; isValid: boolean } | null> {
     return this.messageSubject.asObservable().pipe(
       filter((message) => typeof message === 'object'), // Filtra mensagens não vazias
-      map((message: any) => this.parseMessage(message))
+      map((message: any) => {
+        this.playApitoSound();
+        return this.parseMessage(message);
+      })
     );
   }
   
