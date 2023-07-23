@@ -2,7 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { Observable, Subject, map } from 'rxjs';
+import { Observable, Subject, filter, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,9 @@ export class RabbitMQClientService {
   private hubConnection: signalR.HubConnection;
   private connectionPromise: Promise<void>;
   private messageSubject: Subject<string> = new Subject<string>();
+  // private parseMessage(message: any): { content: string; isValid: boolean } {
+  //   return { content: message.content, isValid: message.isValid };
+  // }
   private parseMessage(message: any): { content: string; isValid: boolean } {
     return { content: message.content, isValid: message.isValid };
   }
@@ -54,9 +57,15 @@ export class RabbitMQClientService {
       this.hubConnection.invoke('SendText', message).catch(err => console.error(err));
     }).catch(err => console.error(err));
   }
-  receiveMessage(): Observable<{ content: string; isValid: boolean }> {
+
+  receiveMessage(): Observable<{ content: string; isValid: boolean } | null> {
     return this.messageSubject.asObservable().pipe(
+      filter((message) => typeof message === 'object'), // Filtra mensagens não vazias
       map((message: any) => this.parseMessage(message))
     );
-}
+  }
+  
+  private filterNonEmptyMessages(messages: any[]): { content: string; isValid: boolean }[] {
+    return messages.filter((message) => message.trim() !== '').map((message) => JSON.parse(message));
+  }
 }

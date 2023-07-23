@@ -22,16 +22,18 @@ export class ConsumidorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const savedMessages = this.rabbitMQClientService.getSavedMessages();
-
-    savedMessages.forEach((message: MessageInfo) => {
+  
+    savedMessages.forEach((message: { content: string; isValid: boolean }) => {
       this.messages.push({ ...message });
     });
-
-    this.messageSubscription = this.rabbitMQClientService.receiveMessage().subscribe((message: MessageInfo) => {
-      const existingMessage = this.messages.find((msg) => msg.content === message.content);
-      if (!existingMessage) {
-        this.messages.push({ ...message });
-        this.rabbitMQClientService.saveMessage(message);
+  
+    this.messageSubscription = this.rabbitMQClientService.receiveMessage().subscribe((message: { content: string; isValid: boolean } | null) => {
+      if (message !== null) {
+        const existingMessage = this.messages.find((msg) => msg.content === message.content);
+        if (!existingMessage) {
+          this.messages.push({ ...message });
+          this.rabbitMQClientService.saveMessage(message);
+        }
       }
     });
   }
